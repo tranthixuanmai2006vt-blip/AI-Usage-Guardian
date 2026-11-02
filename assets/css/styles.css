@@ -256,3 +256,52 @@ textarea.inp{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11.5px;
 .timer{transition:color .3s}
 select.inp option,select.inp optgroup{font-family:var(--font)}
 @media (prefers-reduced-motion:reduce){.st-card:hover,.lift:hover,.match:hover{transform:none}}
+
+/* ---------- Phiên nhiều công cụ ---------- */
+.chips-row{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:4px 0 2px;width:100%}
+.tchip{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border);background:var(--card);border-radius:999px;padding:7px 8px 7px 14px;font-size:13px;font-weight:500;color:var(--text);
+       transition:background .3s var(--ease),border-color .3s var(--ease),transform .25s var(--ease),box-shadow .3s var(--ease);animation:pop .35s var(--spring) both}
+.tchip.idle{background:var(--yellow)}
+button.tchip{cursor:pointer;padding:7px 14px}
+button.tchip:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(94,49,34,.08)}
+button.tchip:active{transform:scale(.96)}
+.tchip.active{background:var(--pink);border-color:var(--chart-pink);font-weight:700;box-shadow:0 6px 16px rgba(244,155,199,.35)}
+.tchip .tt{font-size:11.5px;color:var(--muted);font-weight:500}
+.tchip.active .tt{color:var(--text)}
+.tchip .tx{all:unset;cursor:pointer;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-size:14px;line-height:1;color:var(--muted);transition:background .2s,color .2s}
+.tchip .tx:hover{background:rgba(94,49,34,.08);color:var(--text)}
+.add-tool{width:auto;max-width:170px;border-radius:999px;padding:7px 12px;font-size:12.5px;border-style:dashed;background:transparent;color:var(--muted)}
+.tr-sub{font-size:11.5px;color:var(--muted);text-align:center;margin:8px 0 4px;max-width:380px}
+.flows{display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:10px;width:100%}
+.lbl-s{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.flow-row{display:flex;flex-wrap:wrap;justify-content:center;gap:6px}
+.flow{border:1px solid var(--border);background:var(--bg);border-radius:999px;padding:6px 12px;font-size:12px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;
+      transition:background .25s var(--ease),border-color .25s var(--ease),transform .25s var(--ease)}
+.flow span{font-size:10.5px;background:var(--blue);border-radius:999px;padding:1px 7px}
+.flow:hover{background:var(--card);transform:translateY(-1px)}
+.flow.on{background:var(--green);border-color:var(--chart-green);font-weight:700}
+.linkbtn{all:unset;cursor:pointer;font-size:12px;color:var(--muted);border-bottom:1px solid currentColor;margin-top:2px;transition:color .2s}
+.linkbtn:hover{color:var(--text)}
+@keyframes pop{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:none}}
+
+/* Hộp thoại kết thúc phiên */
+.end-tools{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}
+.end-tools span{background:var(--card);border:1px solid var(--border);border-radius:999px;padding:4px 10px;font-size:12px}
+.end-tools b{font-weight:700;margin-left:4px}
+.dlg .q{font-weight:700;font-size:13px;margin:16px 0 8px}
+.sc.on{background:var(--pink);border-color:var(--chart-pink);box-shadow:0 6px 16px rgba(244,155,199,.35);transform:translateY(-2px)}
+.scale.sm{gap:5px}
+.scale.sm .sc{padding:6px 2px;border-radius:10px}
+.scale.sm .sc .n{font-size:14px}
+.each{margin-top:12px;border:1px solid var(--border);border-radius:12px;background:var(--card)}
+.each summary{list-style:none;cursor:pointer;padding:9px 12px;font-size:12.5px;font-weight:500;color:var(--muted);display:flex;justify-content:space-between;align-items:center}
+.each summary::-webkit-details-marker{display:none}
+.each summary::after{content:"";width:7px;height:7px;border-right:1.6px solid var(--muted);border-bottom:1.6px solid var(--muted);transform:rotate(45deg) translateY(-2px);transition:transform .35s var(--spring)}
+.each[open] summary::after{transform:rotate(225deg) translateY(-1px)}
+.each-body{padding:2px 12px 12px;display:flex;flex-direction:column;gap:8px;animation:rise .4s var(--ease) both}
+.each-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);align-items:center;gap:10px;font-size:12.5px}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.seg button{border:1px solid var(--border);background:var(--card);border-radius:12px;padding:10px;font-weight:700;font-size:13px;cursor:pointer;transition:background .25s var(--ease),transform .25s var(--ease),box-shadow .25s var(--ease)}
+.seg button:hover{transform:translateY(-1px)}
+.seg button.on[data-vv="1"]{background:var(--green);border-color:var(--chart-green);box-shadow:0 6px 16px rgba(143,220,169,.35)}
+.seg button.on[data-vv="0"]{background:var(--yellow);border-color:var(--chart-yellow)}

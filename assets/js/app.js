@@ -3,7 +3,29 @@
 (function(){
 const MOTION=!window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-Object.assign(I,{trust_lo:{vi:"Không tin",en:"Not at all"},trust_hi:{vi:"Rất tin",en:"Fully"}});
+Object.assign(I,{
+ tr_tools_label:{vi:"Công cụ trong phiên này",en:"Tools in this session"},
+ tr_hint_idle:{vi:"Chọn một hoặc nhiều công cụ bạn sẽ dùng. Lần sau app tự nhớ tổ hợp này.",en:"Pick one or more tools you'll use. The app remembers this combo next time."},
+ tr_hint_run:{vi:"Chạm vào công cụ bạn đang dùng để chuyển. Thời gian tự chia cho từng công cụ.",en:"Tap the tool you're using to switch. Time is split per tool automatically."},
+ tr_add:{vi:"+ Thêm công cụ",en:"+ Add a tool"},
+ tr_flows:{vi:"Quy trình nhanh",en:"Quick workflows"},
+ tr_save_flow:{vi:"Lưu tổ hợp này thành quy trình",en:"Save this combo as a workflow"},
+ tr_remove:{vi:"Bỏ {x} khỏi phiên",en:"Remove {x}"},
+ flow_t:{vi:"Lưu quy trình",en:"Save workflow"}, flow_m:{vi:"Đặt tên cho tổ hợp công cụ này để lần sau chọn một lần là xong.",en:"Name this combo so you can pick it in one tap next time."},
+ flow_ph:{vi:"vd: Viết báo cáo nhóm",en:"e.g. Group report"}, save_btn:{vi:"Lưu",en:"Save"},
+ end_t:{vi:"Kết thúc phiên",en:"End of session"}, end_sum:{vi:"{n} công cụ · {t}",en:"{n} tools · {t}"},
+ end_trust_q:{vi:"Bạn tin kết quả AI trong phiên này ở mức nào?",en:"How much did you trust the AI's results in this session?"},
+ end_each:{vi:"Chấm riêng từng công cụ (không bắt buộc)",en:"Rate each tool separately (optional)"},
+ end_verify_q:{vi:"Bạn có kiểm tra lại kết quả bằng công cụ hoặc nguồn khác không?",en:"Did you check the results with another tool or source?"},
+ verify_yes:{vi:"Có, đã kiểm tra",en:"Yes, I checked"}, verify_no:{vi:"Không",en:"No"},
+ end_skip:{vi:"Bỏ qua",en:"Skip"}, end_save:{vi:"Lưu phiên",en:"Save session"},
+ col_verified:{vi:"Kiểm chứng",en:"Checked"}, yes_short:{vi:"Có",en:"Yes"}, no_short:{vi:"Không",en:"No"},
+ v_title:{vi:"Kiểm chứng trong các phiên",en:"Checking across sessions"},
+ v_rate:{vi:"Trong {n} phiên có trả lời, {y} phiên ({p}%) bạn đã kiểm tra lại kết quả bằng công cụ hoặc nguồn khác.",en:"Of {n} sessions answered, you checked the results with another tool or source in {y} ({p}%)."},
+ v_trust:{vi:"Mức tin trung bình: {a}/5 khi có kiểm chứng, {b}/5 khi không kiểm chứng.",en:"Average trust: {a}/5 when checked, {b}/5 when not checked."},
+ v_multi:{vi:"{m} trên {n} phiên ({p}%) dùng từ 2 công cụ trở lên.",en:"{m} of {n} sessions ({p}%) used 2 or more tools."},
+ v_none:{vi:"Chưa có phiên nào trả lời câu hỏi kiểm chứng.",en:"No session has answered the checking question yet."},
+ trust_lo:{vi:"Không tin",en:"Not at all"},trust_hi:{vi:"Rất tin",en:"Fully"}});
 
 /* ============================== Storage (localStorage, per user) */
 const K_USERS="aug.users", K_CUR="aug.current", K_DATA="aug.data.";
@@ -91,9 +113,12 @@ function addTaskItem(overall,topic,subtask,date){
 }
 function toolSummary(since){
   const m=new Map();
-  for(const s of D.sessions){ if(since&&s.date<since) continue; const k=s.tool||t("tool_other"); if(!m.has(k)) m.set(k,{tool:k,sec:0,tr:[]}); const o=m.get(k); o.sec+=s.dur; if(s.trust!=null) o.tr.push(s.trust); }
+  for(const s of D.sessions){ if(since&&s.date<since) continue;
+    for(const u of sessionTools(s)){ const k=u.name; if(!m.has(k)) m.set(k,{tool:k,sec:0,tr:[]}); const o=m.get(k); o.sec+=u.sec;
+      const tv=(s.toolTrust&&s.toolTrust[k]!=null)?s.toolTrust[k]:s.trust; if(tv!=null) o.tr.push(tv); } }
   return [...m.values()].map(o=>({tool:o.tool,sec:o.sec,trust:avg(o.tr)}));
 }
+function sessionTools(s){ return (s.tools&&s.tools.length)?s.tools:[{name:s.tool||t("tool_other"),sec:s.dur}]; }
 function dailySummary(){
   const m=new Map();
   for(const s of D.sessions){ if(!m.has(s.date)) m.set(s.date,{date:s.date,sec:0,tr:[],exc:0}); const o=m.get(s.date); o.sec+=s.dur; if(s.trust!=null) o.tr.push(s.trust); if(s.exceeded) o.exc++; }
@@ -117,10 +142,23 @@ function maybeWeekly(){const w=isoWeek(new Date()); if(D.lastWeek===w||!weeklySt
 
 function seedDemo(){
   const pool=D.profile.tools.length?D.profile.tools:DEFAULT_AI_TOOLS;
-  const S=[[6,"08:10:00","08:45:00",35,4,0],[6,"13:00:00","13:20:00",20,3,1],[5,"09:05:00","10:10:00",65,2,2],[4,"20:00:00","20:30:00",30,5,0],[3,"10:00:00","10:40:00",40,4,1],[2,"15:30:00","16:25:00",55,3,3],[1,"09:15:00","09:50:00",35,5,0],[1,"19:00:00","19:40:00",40,2,2],[0,"10:10:00","10:55:00",45,4,0],[0,"16:00:00","16:35:00",35,3,1]];
+  const S=[
+   [6,"08:10:00","08:45:00",35,4,["Perplexity AI","ChatGPT"],true],
+   [6,"13:00:00","13:20:00",20,3,["ChatGPT"],false],
+   [5,"09:05:00","10:10:00",65,2,["ChatGPT","Grammarly"],false],
+   [4,"20:00:00","20:30:00",30,5,["Perplexity AI","ChatGPT","Grammarly"],true],
+   [3,"10:00:00","10:40:00",40,4,["Claude","Perplexity AI"],true],
+   [2,"15:30:00","16:25:00",55,3,["ChatGPT","Gamma"],false],
+   [1,"09:15:00","09:50:00",35,5,["Perplexity AI","ChatGPT"],true],
+   [1,"19:00:00","19:40:00",40,2,["Claude"],false],
+   [0,"10:10:00","10:55:00",45,4,["Julius AI","ChatGPT"],true],
+   [0,"16:00:00","16:35:00",35,3,["ChatGPT"],false]];
   const acc={};
-  for(const [ago,st,en,min,trust,ti] of S){ const d=daysAgo(ago), dur=min*60; acc[d]=(acc[d]||0)+dur;
-    addSession({date:d,start:st,end:en,dur,trust,region:D.region,tool:pool[ti%pool.length],exceeded:acc[d]>D.limit*60}); }
+  for(const [ago,st,en,min,trust,names,verified] of S){ const d=daysAgo(ago), dur=min*60; acc[d]=(acc[d]||0)+dur;
+    const w=names.map((_,i)=>i===0&&names.length>1?0.45:(names.length>1?0.55/(names.length-1):1));
+    const tools=names.map((n,i)=>({name:n,sec:Math.round(dur*w[i])}));
+    const primary=tools.reduce((a,b)=>b.sec>a.sec?b:a).name;
+    addSession({date:d,start:st,end:en,dur,trust,region:D.region,tool:primary,tools,toolTrust:null,verified,exceeded:acc[d]>D.limit*60}); }
   const T=[
    ["Bài truyền thông ra mắt CLB","marketing","tìm ref content trên Instagram","eff"],
    ["Bài truyền thông ra mắt CLB","marketing","viết content caption chính","eff"],
@@ -191,7 +229,7 @@ function renderLogin(){
   $("#lgIn").onclick=signIn; $("#lgP").onkeydown=e=>{if(e.key==="Enter") signIn();};
   $("#lgDemo").onclick=async()=>{ const users=sget(K_USERS)||{};
     if(!users.demo){const salt=Math.random().toString(36).slice(2); users.demo={salt,hash:await hashPw("demo",salt),created:new Date().toISOString()}; sset(K_USERS,users);}
-    let d=sget(K_DATA+"demo"); if(!d){ d=newData("demo",{name:"Demo",school:"",region_key:"region_north",tools:["ChatGPT","Perplexity AI","Claude","Google Gemini"]}); d.limit=120; sset(K_DATA+"demo",d); user="demo"; D=d; seedDemo(); }
+    let d=sget(K_DATA+"demo"); if(!d){ d=newData("demo",{name:"Demo",school:"",region_key:"region_north",tools:["ChatGPT","Perplexity AI","Claude","Google Gemini"]}); d.limit=120; d.lastCombo=["Perplexity AI","ChatGPT","Grammarly"]; sset(K_DATA+"demo",d); user="demo"; D=d; seedDemo(); }
     enter("demo"); };
 }
 function enter(u){
@@ -247,44 +285,113 @@ function renderPage(anim){
 }
 
 /* ============================== Page: Theo dõi */
+const BUILTIN_FLOWS=[
+ {name:{vi:"Viết báo cáo",en:"Write a report"},tools:["Perplexity AI","ChatGPT","Grammarly"]},
+ {name:{vi:"Làm slide",en:"Make slides"},tools:["ChatGPT","Gamma"]},
+ {name:{vi:"Phân tích số liệu",en:"Analyse data"},tools:["Julius AI","ChatGPT"]},
+ {name:{vi:"Video ngắn",en:"Short video"},tools:["ChatGPT","CapCut AI"]},
+];
+let picked=null;
+function flowName(f){return typeof f.name==="string"?f.name:(f.name[lang]||f.name.vi);}
+function allFlows(){return (D.workflows||[]).concat(BUILTIN_FLOWS);}
+function normRunning(){ const r=D.running; if(r&&!r.tools){ D.running={start:r.start,tools:[r.tool||"ChatGPT"],active:r.tool||"ChatGPT",segStart:r.start,acc:{}}; save(); } }
+function currentTools(){ normRunning(); if(D.running) return D.running.tools;
+  if(!picked) picked=((D.lastCombo&&D.lastCombo.length)?D.lastCombo:[D.profile.tools[0]||"ChatGPT"]).slice(); return picked; }
+function liveSecs(r){ const acc=Object.assign({},r.acc); acc[r.active]=(acc[r.active]||0)+(Date.now()-r.segStart)/1000; return acc; }
+const mmss=s=>{s=Math.floor(s); return (s>=3600?pad(Math.floor(s/3600))+":":"")+pad(Math.floor(s%3600/60))+":"+pad(s%60);};
+
 function pTracker(){
-  const sel=D.running?D.running.tool:(D.profile.tools[0]||"ChatGPT");
+  const run=D.running&&D.running.tools?D.running:null, tools=currentTools();
+  const chips=tools.map(x=>run
+    ?'<button class="tchip'+(run.active===x?' active':'')+'" data-sw="'+esc(x)+'" aria-pressed="'+(run.active===x)+'"><span class="tn">'+esc(x)+'</span><span class="tt num" data-tt="'+esc(x)+'">00:00</span></button>'
+    :'<span class="tchip idle"><span class="tn">'+esc(x)+'</span>'+(tools.length>1?'<button class="tx" data-rm="'+esc(x)+'" aria-label="'+esc(t("tr_remove",{x}))+'">×</button>':'')+'</span>').join("");
+  const flows=run?'':'<div class="flows"><span class="lbl-s">'+esc(t("tr_flows"))+'</span><div class="flow-row">'+allFlows().map((f,i)=>{const on=f.tools.join("|")===tools.join("|");
+      return '<button class="flow'+(on?' on':'')+'" data-flow="'+i+'" title="'+esc(f.tools.join(" → "))+'">'+esc(flowName(f))+'<span>'+f.tools.length+'</span></button>';}).join("")+'</div>'+
+    (tools.length>1&&!allFlows().some(f=>f.tools.join("|")===tools.join("|"))?'<button class="linkbtn" id="trSaveFlow">'+esc(t("tr_save_flow"))+'</button>':'')+'</div>';
   return '<div class="tr-wrap"><p class="tr-hint">'+esc(t("tracker_hint"))+'</p><div class="rcard tr-card">'+
-   '<label class="lbl" for="trTool" style="text-align:center">'+esc(t("tracker_tool_label"))+'</label>'+
-   '<select class="inp" id="trTool"'+(D.running?" disabled":"")+'>'+toolOptions(sel)+'</select>'+
+   '<span class="lbl" style="text-align:center">'+esc(t("tr_tools_label"))+'</span>'+
+   '<div class="chips-row">'+chips+'<select class="inp add-tool" id="trAdd" aria-label="'+esc(t("tr_add"))+'"><option value="">'+esc(t("tr_add"))+'</option>'+toolOptions("\u0000")+'</select></div>'+
+   '<p class="tr-sub">'+esc(t(run?"tr_hint_run":"tr_hint_idle"))+'</p>'+flows+
    '<div class="timer" id="trTimer">00:00:00</div><div class="status" id="trStatus"></div>'+
    '<div class="tr-btns"><button class="b" id="trStart">'+esc(t("tracker_start"))+'</button><button class="b blue" id="trStop">'+esc(t("tracker_stop"))+'</button></div>'+
    '<div class="pbar" id="trBar"><i style="width:0"></i></div><div class="plabel num" id="trProg"></div></div></div>';
 }
 function wTracker(){
-  $("#trStart").disabled=!!D.running; $("#trStop").disabled=!D.running;
+  const run=D.running;
+  $("#trStart").disabled=!!run; $("#trStop").disabled=!run;
   $("#trStart").onclick=async()=>{ if(D.running) return;
     const want=await confirmDlg(t("start_popup_title"),t("start_popup_msg"),t("yes"),t("no"),t("start_popup_note"));
     if(want){go("task");return;}
-    D.running={start:Date.now(),tool:$("#trTool").value}; warned80=false; warned100=false; trackerMsg=null; save(); renderPage(); };
-  $("#trStop").onclick=stopSession; tick();
+    const tl=currentTools().slice(), now=Date.now();
+    D.running={start:now,tools:tl,active:tl[0],segStart:now,acc:{}}; D.lastCombo=tl.slice();
+    warned80=false; warned100=false; trackerMsg=null; save(); renderPage(); };
+  $("#trStop").onclick=stopSession;
+  document.querySelectorAll("[data-rm]").forEach(b=>b.onclick=()=>{ picked=currentTools().filter(x=>x!==b.dataset.rm); renderPage(); });
+  document.querySelectorAll("[data-sw]").forEach(b=>b.onclick=()=>switchTool(b.dataset.sw));
+  document.querySelectorAll("[data-flow]").forEach(b=>b.onclick=()=>{ picked=allFlows()[+b.dataset.flow].tools.slice(); renderPage(); });
+  $("#trAdd").onchange=e=>{ const v=e.target.value; if(!v) return;
+    if(D.running){ if(!D.running.tools.includes(v)) D.running.tools.push(v); switchTool(v); }
+    else { const tl=currentTools(); if(!tl.includes(v)) tl.push(v); renderPage(); } };
+  const sf=$("#trSaveFlow"); if(sf) sf.onclick=saveFlow;
+  tick();
+}
+function switchTool(x){
+  const r=D.running; if(!r||r.active===x) return;
+  const now=Date.now(); r.acc[r.active]=(r.acc[r.active]||0)+(now-r.segStart)/1000; r.active=x; r.segStart=now; save();
+  document.querySelectorAll("[data-sw]").forEach(b=>{const on=b.dataset.sw===x; b.classList.toggle("active",on); b.setAttribute("aria-pressed",on);});
+  if(!document.querySelector('[data-sw="'+CSS.escape(x)+'"]')) renderPage();
+}
+async function saveFlow(){
+  const tl=currentTools().slice();
+  const name=await dialog('<h3>'+esc(t("flow_t"))+'</h3><p class="msg">'+esc(t("flow_m"))+'</p><p class="note" style="margin:-8px 0 12px">'+esc(tl.join(" → "))+'</p><input class="inp" id="flowName" placeholder="'+esc(t("flow_ph"))+'" data-focus><div class="acts" style="margin-top:16px"><button class="b blue" data-v="0">'+esc(t("cancel"))+'</button><button class="b" data-v="1">'+esc(t("save_btn"))+'</button></div>',
+    (d,done)=>{ const inp=d.querySelector("#flowName"); const ok=()=>done(inp.value.trim()||null);
+      d.querySelector('[data-v="0"]').onclick=()=>done(null); d.querySelector('[data-v="1"]').onclick=ok; inp.onkeydown=e=>{if(e.key==="Enter") ok();}; });
+  if(!name) return; D.workflows=(D.workflows||[]); D.workflows.unshift({name,tools:tl}); save(); renderPage();
 }
 function stopTimer(){clearTimeout(timerJob); timerJob=null;}
 function tick(){
   stopTimer(); if(page!=="tracker"||!$("#trTimer")) return;
-  const el=D.running?Math.floor((Date.now()-D.running.start)/1000):0;
+  const r=D.running, el=r?Math.floor((Date.now()-r.start)/1000):0;
   $("#trTimer").textContent=hms(el);
-  const st=$("#trStatus"); st.textContent=D.running?t("tracker_status_running"):(trackerMsg||t("tracker_status_idle")); st.classList.toggle("on",!!D.running);
+  if(r&&r.tools){ const acc=liveSecs(r); document.querySelectorAll("[data-tt]").forEach(x=>x.textContent=mmss(acc[x.dataset.tt]||0)); }
+  const st=$("#trStatus"); st.textContent=r?t("tracker_status_running"):(trackerMsg||t("tracker_status_idle")); st.classList.toggle("on",!!r);
   const total=totalToday()+el, lim=D.limit*60, ratio=lim?Math.min(total/lim,1):0;
   $("#trBar i").style.width=ratio*100+"%";
   $("#trProg").textContent=t("tracker_progress",{used:Math.floor(total/60),limit:D.limit,pct:Math.round(ratio*100)});
-  if(D.running){
-    const r=lim?total/lim:0;
-    if(r>=1&&!warned100){warned100=true; warned80=true; infoDlg(t("warn_100_title"),t("warn_100_msg",{limit:D.limit}));}
-    else if(r>=.8&&!warned80){warned80=true; infoDlg(t("warn_80_title"),t("warn_80_msg",{pct:Math.round(r*100)}));}
+  if(r){
+    const q=lim?total/lim:0;
+    if(q>=1&&!warned100){warned100=true; warned80=true; infoDlg(t("warn_100_title"),t("warn_100_msg",{limit:D.limit}));}
+    else if(q>=.8&&!warned80){warned80=true; infoDlg(t("warn_80_title"),t("warn_80_msg",{pct:Math.round(q*100)}));}
     timerJob=setTimeout(tick,1000);
   }
 }
+function endDlg(tools,dur){
+  const scale=(name)=>'<div class="scale'+(name?' sm':'')+'" data-scale="'+esc(name||"")+'">'+[1,2,3,4,5].map(i=>'<button type="button" class="sc" data-s="'+i+'"><span class="n">'+i+'</span>'+(name?'':'<span class="sl">'+(i===1?esc(t("trust_lo")):i===5?esc(t("trust_hi")):"&nbsp;")+'</span>')+'</button>').join("")+'</div>';
+  let h='<h3>'+esc(t("end_t"))+'</h3><p class="note" style="margin:4px 0 12px">'+esc(t("end_sum",{n:tools.length,t:hms(dur)}))+'</p>'+
+   '<div class="end-tools">'+tools.map(u=>'<span>'+esc(u.name)+' <b class="num">'+mmss(u.sec)+'</b></span>').join("")+'</div>'+
+   '<p class="q">'+esc(t("end_trust_q"))+'</p>'+scale("");
+  if(tools.length>1) h+='<details class="each"><summary>'+esc(t("end_each"))+'</summary><div class="each-body">'+tools.map(u=>'<div class="each-row"><span>'+esc(u.name)+'</span>'+scale(u.name)+'</div>').join("")+'</div></details>';
+  h+='<p class="q">'+esc(t("end_verify_q"))+'</p><div class="seg" data-verify><button type="button" data-vv="1">'+esc(t("verify_yes"))+'</button><button type="button" data-vv="0">'+esc(t("verify_no"))+'</button></div>'+
+   '<div class="acts" style="margin-top:20px"><button class="b blue" data-act="skip">'+esc(t("end_skip"))+'</button><button class="b" data-act="save" data-focus>'+esc(t("end_save"))+'</button></div>';
+  return dialog(h,(d,done)=>{
+    const st={trust:null,per:{},verified:null};
+    d.querySelectorAll("[data-scale]").forEach(sc=>sc.querySelectorAll("[data-s]").forEach(b=>b.onclick=()=>{
+      sc.querySelectorAll("[data-s]").forEach(x=>x.classList.toggle("on",x===b)); const v=+b.dataset.s, n=sc.dataset.scale; if(n) st.per[n]=v; else st.trust=v; }));
+    d.querySelectorAll("[data-vv]").forEach(b=>b.onclick=()=>{ d.querySelectorAll("[data-vv]").forEach(x=>x.classList.toggle("on",x===b)); st.verified=b.dataset.vv==="1"; });
+    d.querySelector('[data-act="skip"]').onclick=()=>done({trust:null,per:{},verified:null});
+    d.querySelector('[data-act="save"]').onclick=()=>done(st);
+  });
+}
 async function stopSession(){
-  if(!D.running) return; const r=D.running, end=new Date(), dur=Math.max(1,Math.round((end-r.start)/1000));
+  normRunning(); if(!D.running) return;
+  const r=D.running, end=new Date(), dur=Math.max(1,Math.round((end-r.start)/1000));
+  const acc=liveSecs(r); let tools=r.tools.map(n=>({name:n,sec:Math.round(acc[n]||0)})).filter(u=>u.sec>0);
+  if(!tools.length) tools=[{name:r.active,sec:dur}];
   const exceeded=totalToday()+dur>D.limit*60; D.running=null; save(); stopTimer();
-  const trust=await trustDlg();
-  addSession({date:today(),start:clock(new Date(r.start)),end:clock(end),dur,trust:trust||null,region:D.region,tool:r.tool,exceeded});
+  const res=(await endDlg(tools,dur))||{trust:null,per:{},verified:null};
+  const primary=tools.reduce((a,b)=>b.sec>a.sec?b:a).name;
+  addSession({date:today(),start:clock(new Date(r.start)),end:clock(end),dur,trust:res.trust,region:D.region,tool:primary,tools,
+    toolTrust:Object.keys(res.per).length?res.per:null,verified:res.verified,exceeded});
   trackerMsg=t("tracker_status_done"); renderPage();
 }
 
@@ -292,8 +399,8 @@ async function stopSession(){
 function pDashboard(){
   const d=today(), rows=D.sessions.filter(s=>s.date===d).slice().reverse();
   return '<div class="rcard lift" style="border-radius:20px;padding:18px"><div class="dash-total num">'+esc(t("dash_total_today",{t:hms(totalToday())}))+'</div><div class="muted" style="font-size:12px;margin-top:2px">'+esc(t("dash_limit",{limit:D.limit}))+'</div></div>'+
-   '<div class="sect">'+esc(t("dash_sessions_today"))+'</div><div class="tv c"><div class="scroll"><table><thead><tr><th>'+esc(t("col_start"))+'</th><th>'+esc(t("col_end"))+'</th><th>'+esc(t("col_duration"))+'</th><th>'+esc(t("col_trust"))+'</th><th>'+esc(t("col_tool"))+'</th><th>'+esc(t("col_region"))+'</th></tr></thead><tbody>'+
-   (rows.length?rows.map(s=>'<tr><td class="num">'+s.start+'</td><td class="num">'+s.end+'</td><td class="num">'+hms(s.dur)+'</td><td>'+(s.trust==null?"-":s.trust)+'</td><td>'+esc(s.tool||"-")+'</td><td>'+esc(t(s.region||"region_other"))+'</td></tr>').join(""):'<tr class="empty"><td colspan="6">—</td></tr>')+'</tbody></table></div></div>';
+   '<div class="sect">'+esc(t("dash_sessions_today"))+'</div><div class="tv c"><div class="scroll"><table><thead><tr><th>'+esc(t("col_start"))+'</th><th>'+esc(t("col_end"))+'</th><th>'+esc(t("col_duration"))+'</th><th>'+esc(t("col_trust"))+'</th><th>'+esc(t("col_tool"))+'</th><th>'+esc(t("col_verified"))+'</th><th>'+esc(t("col_region"))+'</th></tr></thead><tbody>'+
+   (rows.length?rows.map(s=>'<tr><td class="num">'+s.start+'</td><td class="num">'+s.end+'</td><td class="num">'+hms(s.dur)+'</td><td>'+(s.trust==null?"-":s.trust)+'</td><td>'+esc(sessionTools(s).map(u=>u.name).join(" → "))+'</td><td>'+(s.verified==null?"-":esc(t(s.verified?"yes_short":"no_short")))+'</td><td>'+esc(t(s.region||"region_other"))+'</td></tr>').join(""):'<tr class="empty"><td colspan="7">—</td></tr>')+'</tbody></table></div></div>';
 }
 
 /* ============================== Page: Phân tích Task */
@@ -353,9 +460,21 @@ function pStats(){
    '<div class="rcard st-card"><h3>'+esc(t("stats_trust_trend"))+'</h3>'+chart(trend,5,v=>String(v),["var(--chart-blue)"],"stats_no_trust_data")+'</div>'+
    '<div class="rcard st-card"><h3>'+esc(t("stats_tool_dist"))+'</h3>'+chart(tools.map(x=>({l:x.tool,v:Math.floor(x.sec/60)})),maxMin,v=>v+"m",pal,"stats_no_tool_data")+'</div>'+
    '<div class="rcard st-card"><h3>'+esc(t("stats_tool_trust"))+'</h3>'+chart(tools.map(x=>({l:x.tool,v:x.trust||0})),5,v=>String(v),pal,"stats_no_tool_data")+'</div></div>'+
-   '<div class="st-title" style="font-size:12.5px;margin:16px 0 6px">'+esc(t("stats_match_title"))+'</div><div class="rcard match">'+m+'</div>';
+   '<div class="st-title" style="font-size:12.5px;margin:16px 0 6px">'+esc(t("stats_match_title"))+'</div><div class="rcard match">'+m+'</div>'+
+   '<div class="st-title" style="font-size:12.5px;margin:16px 0 6px">'+esc(t("v_title"))+'</div><div class="rcard match">'+verifyBlock()+'</div>';
 }
 function wStats(){}
+function verifyBlock(){
+  const S=D.sessions, n=S.length; if(!n) return '<p class="muted">'+esc(t("v_none"))+'</p>';
+  const ans=S.filter(s=>s.verified!=null), y=ans.filter(s=>s.verified);
+  const multi=S.filter(s=>sessionTools(s).length>1).length;
+  const ta=avg(y.filter(s=>s.trust!=null).map(s=>s.trust)), tb=avg(ans.filter(s=>!s.verified&&s.trust!=null).map(s=>s.trust));
+  let h='<ul class="mlist">';
+  h+=ans.length?'<li>'+esc(t("v_rate",{n:ans.length,y:y.length,p:Math.round(y.length/ans.length*100)}))+'</li>':'<li>'+esc(t("v_none"))+'</li>';
+  if(ta!=null&&tb!=null) h+='<li>'+esc(t("v_trust",{a:ta,b:tb}))+'</li>';
+  h+='<li>'+esc(t("v_multi",{m:multi,n,p:Math.round(multi/n*100)}))+'</li></ul>';
+  return h;
+}
 
 /* ============================== Page: Lịch sử */
 function pHistory(){
