@@ -222,6 +222,11 @@ const TAX=[
  {k:["mật khẩu","password","thông tin cá nhân","dữ liệu cá nhân","số tài khoản","cccd","căn cước","hộ chiếu","thông tin khách hàng","dữ liệu khách hàng","dữ liệu nội bộ","tài liệu mật","bảo mật"],l:"weak",
   vi:"Dữ liệu cá nhân/bảo mật không nên dán vào công cụ AI công cộng — có rủi ro lộ thông tin. Hãy tự xử lý hoặc ẩn danh trước khi dùng AI.",
   en:"Personal or confidential data shouldn't go into public AI tools — it risks leaking. Handle it yourself or anonymize it first."},
+
+ /* ---------- WELL: đời sống hằng ngày ---------- */
+ {k:["nấu ăn","công thức nấu ăn","món ăn","thực đơn tuần","đi chợ","danh sách đi chợ","mua sắm","gợi ý quà","ý tưởng quà","du lịch","lịch trình du lịch","đặt vé","tìm chỗ ở","dọn nhà","sắp xếp phòng","mẹo vặt","cách làm","hướng dẫn cách","how to","tips","sửa đồ","chăm cây","nuôi thú cưng","cách dùng"],l:"well",
+  vi:"Với việc đời sống thường ngày, AI gợi ý nhanh công thức, danh sách, mẹo và các bước làm. Bạn quyết định theo sở thích, ngân sách và tình hình thực tế.",
+  en:"For everyday tasks, AI quickly suggests recipes, lists, tips and steps. You decide based on your taste, budget and real situation."},
 ];
 
 /* Tín hiệu ngữ cảnh: dịch mức một bậc (well → moderate → weak hoặc ngược lại) và thêm ghi chú vào lý do */
@@ -245,7 +250,7 @@ const VERB_HINTS=[
  {l:"well",k:["tìm","liệt kê","tổng hợp","sắp xếp","phân loại","định dạng","chuyển","đổi","tra","gợi ý","giải thích","so sánh","tóm","ôn","học","tạo danh sách","lập bảng","đếm","tính","list","find","summarize","compare","convert","organize"],
   vi:"Ước lượng theo loại việc (tìm/tổng hợp/sắp xếp/giải thích): đây thường là thế mạnh của AI. Hãy kiểm tra lại kết quả với nguồn tin cậy.",
   en:"Estimated from the type of action (find/compile/organize/explain): usually an AI strength. Verify results against reliable sources."},
- {l:"weak",k:["quyết","chốt","duyệt","ký","gặp","gọi","thuyết phục","phỏng vấn","đánh giá người","động viên","an ủi","lãnh đạo","decide","approve","sign","meet","call","persuade"],
+ {l:"weak",k:["chốt","duyệt","ký","gặp","gọi","thuyết phục","phỏng vấn","đánh giá người","động viên","an ủi","lãnh đạo","decide","approve","sign","meet","call","persuade"],
   vi:"Ước lượng theo loại việc (quyết định/chốt/gặp gỡ/thuyết phục): việc này cần con người trực tiếp làm và chịu trách nhiệm.",
   en:"Estimated from the type of action (decide/approve/meet/persuade): this needs a human to do it and own it."},
  {l:"moderate",k:["viết","soạn","làm","chọn","thiết kế","lập","xây dựng","chuẩn bị","phân tích","đánh giá","phát triển","tạo","hoàn thiện","write","draft","make","design","build","prepare","analyse","analyze","create","plan"],
@@ -255,6 +260,160 @@ const VERB_HINTS=[
 const GENERIC={vi:"Chưa có nhóm quy tắc khớp chính xác, nên app ước lượng ở mức Trung bình: dùng AI cho phần khung/nháp, tự làm phần cần hiểu biết riêng và tự kiểm tra kết quả. Thử mô tả việc cụ thể hơn (ví dụ: “tóm tắt 3 bài báo”, “thiết kế poster”, “đàm phán với nhà tài trợ”) để có đánh giá chính xác hơn.",
   en:"No rule group matched exactly, so the app estimates Moderate: use AI for structure and drafts, do the parts that need your own knowledge, and check the result. Describe the task more specifically (e.g. “summarize 3 papers”, “design a poster”, “negotiate with a sponsor”) for a sharper rating."};
 
+/* ============================== Mở rộng dữ liệu (v3)
+   k = từ khoá thêm; v × o = cặp "hành động × đối tượng": khớp khi câu có ít nhất một hành động VÀ một đối tượng của cùng nhóm,
+   ở bất kỳ vị trí nào (ví dụ "làm giúp mình 10 slide" khớp làm × slide). Điểm của cặp = số chữ của hành động + đối tượng. */
+const DOCS=["bài báo","tài liệu","paper","sách","chương","giáo trình","bài giảng","slide","báo cáo","văn bản","bài viết","article","luận văn","khoá luận","video","podcast","cuộc họp","buổi họp","buổi học","bài đọc","nghiên cứu","case","email","hợp đồng","phim","ebook","pdf","transcript"];
+const EXT={
+ 1:{k:["google","tra google","tìm trên mạng","search google","desk research","secondary research","dữ liệu thứ cấp","thông tin cơ bản","kiến thức nền","background research","tìm đáp án nhanh","tìm hiểu nhanh","tìm thông tin nhanh","fact","hỏi chatgpt","tìm mẫu","tìm template","tìm học bổng","tìm khoá học","tìm địa điểm","tìm quán","tìm trend","tìm xu hướng","tìm tin tức","cập nhật tin tức","tin tức","look up"],
+    v:["tìm","tìm kiếm","tra","tra cứu","kiếm","săn","lục","search","find","look up","thu thập","tìm hiểu","tổng hợp","gom"],
+    o:["tài liệu","nguồn","ref","reference","thông tin","số liệu","dữ liệu thứ cấp","bài báo","paper","nghiên cứu","case study","ví dụ","mẫu","template","báo cáo ngành","thống kê","xu hướng","trend","tin tức","giá","học bổng","khoá học","khóa học","định nghĩa","quy định","địa điểm","sources","articles","data"]},
+ 2:{k:["key takeaways","ý chính","nội dung chính","tldr","tl;dr","đọc hiểu nhanh","trích ý","rút ý","bullet point","gạch đầu dòng","note taking","ghi chép","tóm gọn","tổng kết nội dung","recap","nghe lại bài giảng","tóm tắt video","tóm tắt sách","tóm tắt chương"],
+    v:["tóm tắt","tóm lược","rút gọn","tóm","tổng kết","ghi chú","note","summarize","highlight","đọc nhanh","lướt","recap","ghi chép"],o:DOCS},
+ 3:{k:["học lý thuyết","tự học","self study","hỏi đáp kiến thức","gia sư ai","tutor","eli5","giải thích đơn giản","phân biệt khái niệm","so sánh khái niệm","hiểu bài","không hiểu bài","học chương mới","học kiến thức mới","ví dụ minh hoạ cho khái niệm","cho ví dụ","lấy ví dụ"],
+    v:["giải thích","hiểu","giảng","làm rõ","phân biệt","explain","clarify","học về","tìm hiểu về","cho ví dụ về"],
+    o:["khái niệm","lý thuyết","thuật ngữ","công thức","định lý","mô hình","hiện tượng","cơ chế","thuật toán","quy trình","biểu đồ","đề bài","kiến thức","bài học","concept","theory","nguyên lý","học thuyết","định luật"]},
+ 4:{k:["ôn bài","ôn kiến thức","học bài","học thuộc","ghi nhớ","spaced repetition","anki","quizlet","đề cương","làm đề cương","ôn chương","câu hỏi trắc nghiệm","mock test","đề thi thử","thi thử","luyện đề","kiểm tra kiến thức","tự kiểm tra","practice test","câu hỏi tự luận mẫu"],
+    v:["tạo","soạn","làm","generate","lập","viết"],
+    o:["flashcard","câu hỏi ôn","câu hỏi ôn tập","quiz","đề cương ôn tập","đề luyện","bài tập luyện","trắc nghiệm","thẻ ghi nhớ","đề thi thử","mock test"]},
+ 5:{k:["seo","bài seo","blog","bài blog","newsletter","content facebook","content tiktok","content instagram","content linkedin","bio","tagline","tin tuyển dụng","job description","jd","lời giới thiệu","mô tả sự kiện","bài pr","press release","thông cáo báo chí","viết lách","status","thread","cta","call to action","content marketing","content sáng tạo","bài quảng cáo","mô tả khoá học","mô tả dự án","viết giới thiệu","landing copy","nội dung website"],
+    v:["viết","soạn","lên","tạo","nghĩ","draft","write","sáng tạo"],
+    o:["caption","content","post","bài đăng","status","tiêu đề","slogan","tagline","hashtag","headline","mô tả","quảng cáo","ads","bài pr","bài seo","blog","newsletter","mô tả sản phẩm","cta","lời giới thiệu","bio","tin tuyển dụng","jd","bài fanpage","bài facebook","bài instagram","bài tiktok","bài linkedin","thread","thông cáo"]},
+ 6:{k:["chuyển ngữ","phiên dịch văn bản","dịch abstract","dịch thuật ngữ","english version","bản tiếng anh","bản tiếng việt","song ngữ","bilingual","sang tiếng anh","sang tiếng việt","to english","to vietnamese"],
+    v:["dịch","chuyển ngữ","translate","chuyển sang"],
+    o:["tiếng anh","tiếng việt","tiếng trung","tiếng nhật","tiếng hàn","tiếng pháp","tiếng đức","english","tài liệu","bài báo","email","caption","slide","phụ đề","abstract","văn bản","đoạn văn","câu"]},
+ 7:{k:["check grammar","grammarly","quillbot","sửa văn","biên tập","edit bài","chỉnh sửa câu chữ","trau chuốt","chau chuốt","viết lại cho hay","viết lại cho mượt","rút gọn câu","viết ngắn lại","viết gọn lại","sửa lỗi đánh máy","typo","lỗi đánh máy","đọc soát","làm văn hay hơn","tăng tính học thuật","academic tone","văn phong học thuật","cải thiện câu văn","polish"],
+    v:["sửa","chỉnh","rà","soát","kiểm tra","edit","polish","biên tập","trau chuốt","chau chuốt","proofread","cải thiện","viết lại"],
+    o:["chính tả","ngữ pháp","câu","câu văn","văn","văn phong","lỗi chính tả","đoạn văn","câu chữ","từ ngữ","grammar","typo","giọng văn","wording"]},
+ 8:{k:["trình bày văn bản","trình bày word","format word","căn chỉnh","đánh số trang","mục lục tự động","định dạng bảng","chuyển pdf","pdf sang word","word sang pdf","latex","markdown","endnote","zotero","mendeley","trích dẫn","in text citation","chicago","mla","ieee","vancouver","chuẩn trình bày","quy cách trình bày","font times new roman","giãn dòng"],
+    v:["định dạng","format","trình bày","chuẩn hoá","chuẩn hóa","chuyển","convert","căn chỉnh","đánh"],
+    o:["trích dẫn","tài liệu tham khảo","citation","reference","references","bảng","file","pdf","word","docx","latex","văn bản","số trang","mục lục"]},
+ 9:{k:["cấu trúc báo cáo","cấu trúc slide","cấu trúc tiểu luận","cấu trúc bài thuyết trình","chia mục","chia phần","sắp xếp ý","sắp xếp luận điểm","mind map","khung sườn","flow bài","luồng bài","dàn bài"],
+    v:["lên","lập","xây dựng","làm","tạo","viết","sắp xếp","phác"],
+    o:["dàn ý","outline","khung","sườn","bố cục","cấu trúc","mục lục","đề cương chi tiết","framework","dàn bài","luồng"]},
+ 10:{k:["email xác nhận","đơn xin phép","đơn xin nghỉ học","viết đơn","thư mời","lời mời tham dự","thông báo lớp","tin nhắn nhóm","email đăng ký","email hỏi thông tin","email reminder","reminder","email nhắc deadline","tin nhắn nhắc","thông báo họp","email xin tài liệu","email xin lịch","đặt lịch hẹn"],
+    v:["viết","soạn","gửi","trả lời","nhắn"],
+    o:["email xin","email hỏi","email nhắc","email cảm ơn","thư cảm ơn","thông báo","lời mời","thư mời","tin nhắn nhóm","thông báo lớp","email xác nhận","email đăng ký","đơn xin","đơn","reminder"]},
+ 11:{k:["ý tưởng","nghĩ ý tưởng","gợi ý chủ đề","concept","góc nhìn","hướng tiếp cận","ý tưởng sáng tạo","ý tưởng nội dung","ý tưởng quà tặng","ý tưởng sự kiện","ý tưởng video","ý tưởng bài đăng","tên thương hiệu","tên sản phẩm","tên nhóm","tên dự án","đặt tên team","big idea","ideation","nảy ý tưởng","gợi ý hướng"],
+    v:["nghĩ","tìm","gợi ý","lên","brainstorm","đề xuất","nảy"],
+    o:["ý tưởng","tên","concept","chủ đề","góc nhìn","hướng","idea","ideas"]},
+ 12:{k:["so sánh giá","review sản phẩm","nên mua","chọn laptop","đánh giá sản phẩm","nên dùng cái nào","cái nào tốt hơn","which is better","bảng ưu nhược","đối chiếu phương án"],
+    v:["so sánh","đối chiếu","compare","cân nhắc giữa"],
+    o:["lựa chọn","phương án","sản phẩm","công cụ","phần mềm","laptop","điện thoại","gói","dịch vụ","ưu nhược điểm","giá","option","options","app"]},
+ 13:{k:["vlookup","xlookup","hàm if","sumif","countif","conditional formatting","dashboard","power bi","tableau","looker studio","trực quan hoá","trực quan hóa","visualize","vẽ đồ thị","đồ thị","bảng tổng hợp","tổng hợp số liệu","tính trung bình","tính phần trăm","tính lãi","tính chi phí","tính gpa","số liệu khảo sát","xử lý khảo sát","mã hoá dữ liệu","nhập liệu khảo sát","xuất dữ liệu","bảng excel","file excel","spreadsheet","số liệu","dữ liệu"],
+    v:["phân tích","xử lý","tổng hợp","tính","vẽ","làm sạch","lọc","sắp xếp","thống kê","trực quan hoá","trực quan hóa","nhập","mã hoá"],
+    o:["số liệu","dữ liệu","data","bảng tính","excel","biểu đồ","chart","khảo sát","doanh số","doanh thu","kết quả khảo sát","bảng điểm","đồ thị","bảng"]},
+ 14:{k:["kinh tế lượng","econometrics","ols","logit","probit","panel data","dữ liệu bảng","vif","đa cộng tuyến","phương sai thay đổi","tự tương quan","p value","ý nghĩa thống kê","hệ số hồi quy","r bình phương","smartpls","amos","pls sem","ardl","nardl","garch","arima","chuỗi thời gian","time series","mô hình hồi quy","do file","lệnh stata"],
+    v:["chạy","kiểm định","ước lượng","đọc","viết lệnh","diễn giải"],
+    o:["hồi quy","mô hình","stata","spss","eviews","amos","smartpls","output","kết quả hồi quy","kiểm định","biến"]},
+ 15:{k:["phân tích bình luận","phân loại bình luận","phân tích feedback","tổng hợp feedback","tổng hợp phản hồi","phân loại khảo sát mở","câu trả lời mở","social listening","lắng nghe mạng xã hội","quét bình luận","scrape","web scraping","cào dữ liệu","crawl dữ liệu","hàng nghìn","hàng trăm","nhiều file","hàng loạt tài liệu"],
+    v:["phân loại","tổng hợp","quét","lọc","gắn nhãn","label","cluster","đọc hết"],
+    o:["bình luận","comment","comments","review","reviews","phản hồi","feedback","câu trả lời mở","đánh giá khách hàng","tin nhắn"]},
+ 16:{k:["java","c++","c#","php","react","vue","nodejs","django","flask","api","website","web app","landing page","chatbot","extension","excel macro","macro","vba","google apps script","apps script","jupyter","pandas","matplotlib","github","git","deploy","database","cơ sở dữ liệu","thuật toán","algorithm","pseudo code","lập trình web","front end","back end","frontend","backend","tạo app","làm app","viết app","automation script"],
+    v:["viết","lập trình","code","tạo","xây dựng","build","làm","dựng","phát triển"],
+    o:["code","web","website","trang web","hàm","script","chatbot","bot","api","app","ứng dụng","phần mềm","game","extension","database","query","landing page","tool","công cụ tự động"]},
+ 17:{k:["không chạy","bị lỗi","lỗi khi chạy","traceback","stack trace","syntax error","crash","đọc lỗi","tối ưu tốc độ","review code","code review","viết lại code","lỗi cài đặt","cài đặt thư viện","install"],
+    v:["sửa","fix","debug","khắc phục","xử lý","tìm lỗi"],
+    o:["bug","lỗi code","error","exception","lỗi chạy","lỗi cài đặt","lỗi phần mềm","traceback","crash","code"]},
+ 18:{k:["dự đoán","predict","prediction","ước tính","estimate","xu hướng thị trường","dự báo xu hướng","forecasting"]},
+ 19:{k:["gợi ý cá nhân","tuỳ biến","tùy biến","customize","mail merge","email hàng loạt","gửi email hàng loạt"]},
+ 20:{k:["thủ công","làm thủ công","lặp đi lặp lại","hàng loạt","batch","điền form","điền thông tin","nhập liệu","copy paste","copy dán","gộp file","tách file","merge file","rename","đổi tên file","sắp xếp thư mục","dọn file","phân loại file","phân loại tài liệu","trích xuất thông tin","bóc tách","đối soát","zapier","make com","ifttt","quy trình tự động","workflow tự động","tự động gửi"]},
+ 21:{k:["kế hoạch học tập","study plan","lịch ôn","lịch ôn thi","thời khoá biểu","thời khóa biểu","quản lý thời gian","pomodoro","lịch tuần","weekly plan","daily plan","sắp xếp công việc","ưu tiên công việc trong ngày","nhắc lịch","calendar","notion","lịch trình","itinerary","lịch trình du lịch","kế hoạch du lịch","danh sách mua sắm","shopping list","packing list","kế hoạch ngày","kế hoạch tuần"],
+    v:["lên","lập","xếp","sắp xếp","tạo","làm","lên kế hoạch"],
+    o:["lịch","thời khoá biểu","thời gian biểu","checklist","to do list","danh sách việc","lịch trình","lịch học","lịch ôn","itinerary","schedule","kế hoạch học"]},
+ 22:{k:["ảnh ai","tạo ảnh","vẽ ảnh","midjourney","dall e","stable diffusion","firefly","chỉnh ảnh","sửa ảnh","retouch","làm nét ảnh","upscale","tăng chất lượng ảnh","xoá vật thể","ghép ảnh","ảnh sản phẩm","ảnh nền","avatar","sticker","icon","giọng đọc","voice over","voiceover","đọc văn bản","ghi âm thành văn bản","gỡ băng phỏng vấn","transcript","phiên âm","caption video","nhạc nền ai"],
+    v:["tạo","vẽ","generate","chỉnh","sửa","xoá","xóa","tách","làm"],
+    o:["ảnh","hình","hình ảnh","illustration","minh hoạ","minh họa","phụ đề","subtitle","transcript","giọng đọc","avatar","icon","sticker","nền","background"]},
+ 23:{k:["luận văn","khoá luận","khóa luận","đồ án","thesis","dissertation","bài báo khoa học","viết bài báo","journal","abstract","viết abstract","tóm tắt nghiên cứu","phần mở đầu","đặt vấn đề","cơ sở lý thuyết","kết luận","phần thảo luận","discussion","kiến nghị","đề xuất giải pháp","giải pháp","bài phân tích","bài thu hoạch","bài tập cá nhân","bài dự thi","dự thi","eureka","bài nckh","đề tài nghiên cứu","phân tích kết quả"],
+    v:["viết","làm","soạn","hoàn thiện","triển khai","phát triển","sửa"],
+    o:["tiểu luận","essay","báo cáo","luận văn","khoá luận","khóa luận","đồ án","assignment","bài nghiên cứu","paper","phần mở đầu","cơ sở lý thuyết","kết luận","thảo luận","kiến nghị","giải pháp","bài thu hoạch","abstract","chương","bài dự thi","đề tài"]},
+ 24:{k:["đọc tài liệu","đọc nghiên cứu","tổng quan","systematic review","meta analysis","nghiên cứu trước","các nghiên cứu trước","nghiên cứu liên quan","related work","xác định khoảng trống","gap","lược khảo","lược khảo tài liệu"],
+    v:["đọc","review","hệ thống hoá","hệ thống hóa","lược khảo"],
+    o:["nghiên cứu trước","paper","bài báo khoa học","tài liệu nghiên cứu","literature","nghiên cứu liên quan"]},
+ 25:{k:["google form","form khảo sát","survey","phiếu khảo sát","biến quan sát","mã hoá thang đo","likert","thang likert","mẫu nghiên cứu","chọn mẫu","cỡ mẫu","sampling","khung lý thuyết","biến độc lập","biến phụ thuộc","khảo sát thử","phát khảo sát","gửi khảo sát","pilot test"],
+    v:["thiết kế","xây dựng","soạn","viết","làm","lên","chỉnh"],
+    o:["bảng hỏi","khảo sát","survey","phiếu khảo sát","câu hỏi khảo sát","thang đo","câu hỏi phỏng vấn","mô hình nghiên cứu","giả thuyết","khung lý thuyết","biến quan sát"]},
+ 26:{k:["bài tập","exercise","giải bài","làm bài tập về nhà","toán cao cấp","xác suất thống kê","vi tích phân","đại số tuyến tính","kinh tế vi mô","kinh tế vĩ mô","bài tập tài chính","định khoản","bài toán","check đáp án","kiểm tra đáp án","chữa bài"],
+    v:["giải","làm","chữa","check","kiểm tra","đối chiếu"],
+    o:["bài tập","bài toán","đề bài","đề toán","phương trình","homework","bài tập về nhà","đáp án","câu hỏi bài tập"]},
+ 27:{k:["trình chiếu","google slides","keynote","bài present","present","thiết kế slide","làm ppt","ppt","slide deck","slides"],
+    v:["làm","thiết kế","soạn","tạo","dựng","chỉnh","lên"],
+    o:["slide","slides","ppt","powerpoint","deck","bài thuyết trình","bài present","trình chiếu"]},
+ 28:{k:["luyện nói trước","tập nói","lời dẫn","kịch bản mc","dẫn chương trình","bài phát biểu","speech","phát biểu","câu hỏi phản biện","tập dượt","rehearsal","chuẩn bị phỏng vấn","luyện phỏng vấn","mock interview","phỏng vấn thử"],
+    v:["viết","soạn","chuẩn bị","luyện","tập","dự đoán","dượt"],
+    o:["kịch bản thuyết trình","lời thoại","bài nói","bài phát biểu","speech","q&a","câu hỏi phản biện","lời dẫn","phỏng vấn","buổi phỏng vấn","thuyết trình","bảo vệ","bài thuyết trình"]},
+ 29:{k:["portfolio","hồ sơ năng lực","profile cá nhân","giới thiệu bản thân","self introduction","thư ứng tuyển","đơn ứng tuyển","ứng tuyển","application","essay xin học bổng","bài luận du học","hồ sơ du học","apply","apply học bổng","apply thực tập"],
+    v:["viết","làm","sửa","chỉnh","tối ưu","soạn"],
+    o:["cv","resume","cover letter","portfolio","hồ sơ","bài luận học bổng","personal statement","linkedin","thư xin việc","thư ứng tuyển"]},
+ 30:{k:["figma","brochure","tờ rơi","flyer","standee","backdrop","bao bì","packaging","menu","name card","danh thiếp","lookbook","catalogue","catalog","template thiết kế","màu sắc thương hiệu","bảng màu","font chữ","typography","layout","bố cục trang","wireframe","prototype","giao diện app","giao diện web","moodboard","thiệp","thiệp mời","certificate","giấy chứng nhận"],
+    v:["thiết kế","làm","vẽ","dựng","tạo"],
+    o:["poster","banner","logo","brochure","tờ rơi","flyer","standee","backdrop","bao bì","menu","name card","infographic","thumbnail","giao diện","wireframe","mockup","key visual","bộ nhận diện","thiệp","moodboard"]},
+ 31:{k:["capcut","premiere","vlog","short video","youtube","livestream","kịch bản livestream","quay phim","dựng phim","montage","lồng nhạc","chèn nhạc","hiệu ứng video","motion","animation","hoạt hình","mv","phim ngắn","clip","shot list","trailer"],
+    v:["làm","quay","dựng","edit","cắt","viết","lên","sản xuất"],
+    o:["video","clip","vlog","tiktok","reels","podcast","phim","phim ngắn","mv","kịch bản video","storyboard","livestream","teaser","trailer"]},
+ 32:{k:["viết tiểu thuyết","tiểu thuyết","fanfic","viết nhật ký","nhật ký","văn mẫu","bài văn","tập làm văn","viết văn","nghị luận văn học","cảm nhận tác phẩm","phân tích tác phẩm","thơ","truyện","lời bài hát","viết rap","rap","kịch bản phim","kịch ngắn"],
+    v:["viết","sáng tác","làm"],
+    o:["thơ","truyện","văn","tiểu thuyết","lời bài hát","nhạc","rap","kịch","bài văn"]},
+ 33:{k:["phân tích hành vi","hành vi khách hàng","hành vi người tiêu dùng","consumer behavior","customer journey","hành trình khách hàng","nghiên cứu người dùng","user research","pain point","nỗi đau khách hàng","usp","value proposition","tuyên bố giá trị","phân khúc","segmentation","thị trường mục tiêu","target market","bcg","porter","5 forces","năm áp lực","chuỗi giá trị","value chain","phân tích ngành","quy mô thị trường","market size","tone of voice","big idea","key message","content pillar","gia nhập thị trường","market entry","thâm nhập thị trường","mở rộng thị trường","src","self reference criterion"],
+    v:["phân tích","nghiên cứu","xác định","xây dựng","tìm","lập","đánh giá"],
+    o:["insight","target audience","khách hàng mục tiêu","đối thủ","thị trường","persona","chân dung khách hàng","hành vi khách hàng","swot","pestel","customer journey","content pillar","chiến lược nội dung","phân khúc","ngành"]},
+ 34:{k:["kế hoạch tiếp thị","chiến lược marketing","marketing strategy","digital marketing","chạy quảng cáo","chạy ads","facebook ads","google ads","tiktok ads","booking kol","kol","koc","influencer","seeding","activation","sampling sản phẩm","minigame","giveaway","khuyến mãi","promotion","ra mắt sản phẩm","workshop","hội thảo","talkshow","cuộc thi","gala","run of show","kịch bản chương trình","timeline sự kiện","ngân sách sự kiện","proposal","đề xuất dự án","đề án"],
+    v:["lên","lập","xây dựng","làm","viết","soạn","tổ chức"],
+    o:["kế hoạch marketing","kế hoạch truyền thông","chiến dịch","campaign","sự kiện","event","workshop","minigame","proposal","media plan","talkshow","cuộc thi"]},
+ 35:{k:["tin nhắn chốt đơn","chốt đơn","tư vấn khách","tư vấn khách hàng","trả lời tin nhắn","inbox","reply comment","phản hồi đánh giá","xin lỗi khách","hoàn tiền","đổi trả","faq","câu hỏi thường gặp","kịch bản tư vấn","kịch bản chat","email đối tác","email sếp","email công việc","email chuyên nghiệp","email gửi thầy","email gửi cô","email xin gia hạn","xin gia hạn","email giáo viên","email nhà tuyển dụng","email hr"],
+    v:["viết","soạn","trả lời","phản hồi","gửi","nhắn"],
+    o:["khách hàng","đối tác","khiếu nại","giảng viên","thầy cô","sếp","quản lý","nhà tuyển dụng","hr","inbox","bình luận khách"]},
+ 36:{k:["wbs","phân rã công việc","chia nhỏ công việc","chia nhỏ task","milestone","mốc thời gian","tiến độ","theo dõi tiến độ","báo cáo tiến độ","trello","jira","asana","kanban","scrum","agile","sprint","quản lý công việc","kế hoạch nhóm","kế hoạch triển khai","action plan"],
+    v:["lập","lên","xây dựng","theo dõi","quản lý","chia nhỏ"],
+    o:["kế hoạch","tiến độ","timeline","dự án","milestone","wbs","action plan","deadline","rủi ro"]},
+ 37:{k:["lập ngân sách","ngân sách cá nhân","chi tiêu","quản lý chi tiêu","budget","doanh thu","lợi nhuận","điểm hoà vốn","break even","npv","irr","định giá","giá vốn","p&l","bảng cân đối","kế toán","thuế","startup","khởi nghiệp","gọi vốn","pitching","unit economics","business model canvas","lean canvas"],
+    v:["lập","tính","dự toán","xây dựng","phân tích","định giá"],
+    o:["ngân sách","chi phí","doanh thu","lợi nhuận","giá","dòng tiền","báo cáo tài chính","kế hoạch kinh doanh","mô hình kinh doanh"]},
+ 38:{k:["speaking","writing task","task 2","task 1","reading","listening","toefl","hsk","jlpt","topik","vstep","luyện nghe","luyện đọc","luyện ngữ pháp","chữa bài writing","sửa bài writing","conversation","hội thoại","giao tiếp tiếng anh","phát âm"],
+    v:["luyện","học","tập","ôn","chữa"],
+    o:["speaking","writing","ielts","toeic","toefl","tiếng anh","tiếng trung","tiếng nhật","tiếng hàn","phát âm","hội thoại"]},
+ 39:{k:["bệnh","thuốc","uống thuốc","khám bệnh","bác sĩ","giảm cân","tăng cơ","gym","lịch tập","thực đơn","calo","giấc ngủ","mất ngủ","tiết kiệm","gửi tiết kiệm","cổ phiếu","bất động sản","khoản vay","bảo hiểm","quyền lợi người lao động","luật lao động","hợp đồng thuê nhà"]},
+ 40:{k:["chọn môn","đăng ký môn","chọn chuyên ngành","chọn công việc","chọn công ty","chọn nơi thực tập","thực tập ở đâu","định hướng","lộ trình học","roadmap học","học gì","nên học","chọn khoá học","chọn câu lạc bộ","chọn clb","chọn ngành học","chọn học bổng","có nên"],
+    v:["chọn","lựa chọn","cân nhắc","định hướng"],
+    o:["đề tài","chủ đề nghiên cứu","ngành","nghề","trường","môn","chuyên ngành","công việc","công ty","nơi thực tập","học bổng","khoá học","khóa học"]},
+ 41:{k:["brand strategy","tầm nhìn","sứ mệnh","brand purpose","brand essence","tính cách thương hiệu","brand personality","kiến trúc thương hiệu","định hướng thương hiệu","chiến lược công ty","chiến lược kinh doanh","chiến lược dài hạn","pivot"]},
+ 42:{k:["xin sponsor","sponsor","kêu gọi sponsor","pitching trực tiếp","thuyết phục","thuyết phục khách","thương thảo","mặc cả","trả giá","deal","liên hệ đối tác","gặp mặt","gặp trực tiếp","gọi điện","cold call","telesales","chào hàng"]},
+ 43:{k:["luật","điều luật","nghị định","thông tư","văn bản pháp luật","quy chế","điều lệ","giấy phép","đăng ký kinh doanh","sở hữu trí tuệ","nhãn hiệu","bản quyền hình ảnh","bản quyền nhạc","vi phạm bản quyền","gdpr","privacy policy","chính sách bảo mật","điều khoản sử dụng","biên bản thoả thuận","mou","khiếu nại pháp lý","tranh chấp"]},
+ 44:{k:["kiểm duyệt nội dung","kiểm tra cuối","check cuối","chốt","chốt bài","chốt slide","approve","sign off","nghiệm thu","quyết định đăng","bấm đăng","đăng bài","publish","xuất bản","gửi bản cuối","nộp bản cuối","quality check","qc","fact check cuối"]},
+ 45:{k:["teamwork","làm việc nhóm","điều phối nhóm","quản lý thành viên","đôn đốc","nhắc nhở thành viên","động viên nhóm","họp","cuộc họp nhóm","chủ trì họp","biểu quyết","thống nhất ý kiến","giao việc","delegation","tuyển cộng tác viên","onboarding thành viên","one on one"]},
+ 46:{k:["okr","objective","đặt kpi","mục tiêu cá nhân","mục tiêu dự án","mục tiêu học tập","mục tiêu nghề nghiệp","đặt chỉ tiêu","target","tầm nhìn cá nhân","giá trị sống","ưu tiên","thứ tự ưu tiên"]},
+ 47:{k:["ethics","ethical","đạo đức ai","ai ethics","trách nhiệm xã hội","csr","thiên kiến","bias","công bằng","phân biệt đối xử","quyền riêng tư","copy bài","làm hộ","viết hộ","nhờ ai làm hộ","gian lận","quay cóp","chép bài"]},
+ 48:{k:["stress","căng thẳng","áp lực","buồn","cô đơn","tâm trạng","chia buồn","thăm hỏi","an ủi bạn","lời xin lỗi","lời cảm ơn chân thành","thư cho người yêu","tỏ tình","lời tỏ tình","nói chuyện khó","cuộc nói chuyện khó","hoà giải","chúc mừng sinh nhật","sinh nhật","đám cưới","phát biểu đám cưới","thư cho bố mẹ","thư cho gia đình","quan tâm"]},
+ 49:{k:["chọn màu","chọn font","chọn ảnh","chọn outfit","phối đồ","outfit","thẩm mỹ","vibe","cảm nhận"]},
+ 50:{k:["văn hoá","văn hóa","phong tục","tập quán","tôn giáo","kiêng kỵ","tiếng lóng","slang","meme","trend gen z","ẩn ý","châm biếm","mỉa mai","bản địa hoá","bản địa hóa","localization","thị hiếu địa phương"]},
+ 51:{k:["kết bạn","làm quen","giữ liên lạc","xin giới thiệu","referral","alumni","cựu sinh viên","gặp gỡ","kết nối","coffee chat","xin lời khuyên","hỏi kinh nghiệm"]},
+ 52:{k:["lựa chọn cuối","chọn phương án cuối","chọn người","chọn ứng viên","cam kết","đánh đổi","trade off","ký","ký tên","xác nhận","phê duyệt ngân sách","chi tiền","giải ngân","đầu tư tiền"]},
+ 53:{k:["sáng tạo","đổi mới","innovation","khác biệt","điểm khác biệt","độc đáo","ý tưởng mới lạ","mô hình mới","giải pháp mới","sáng kiến","phát minh","hướng đi mới","góc nhìn mới","tư duy phản biện","critical thinking","phản biện ý tưởng","đặt câu hỏi nghiên cứu","câu hỏi nghiên cứu","research question"]},
+ 54:{k:["không chắc","phân vân","lưỡng lự","rủi ro cao","khủng hoảng","xử lý khủng hoảng","crisis","tình huống bất ngờ","ứng biến","xử lý sự cố","sự cố"]},
+ 55:{k:["trưởng nhóm","leader","làm leader","dẫn dắt","quản lý cảm xúc nhóm","tạo động lực","motivate","truyền lửa","coaching","mentoring","kèm cặp","đào tạo thành viên","huấn luyện","đọc vị","đọc phòng"]},
+ 56:{k:["thi","kỳ thi","kì thi","giữa kì","cuối kì","thi cuối kì","thi giữa kì","bài kiểm tra 15 phút","quiz trên lớp","kiểm tra miệng","thi vấn đáp","vấn đáp","thi thực hành","take home exam","proctor"]},
+ 57:{k:["thuyết trình trước lớp","thuyết trình trên lớp","present trước lớp","bảo vệ khoá luận","bảo vệ luận văn","bảo vệ đồ án","hội đồng","trả lời hội đồng","phỏng vấn","interview","phỏng vấn trực tiếp","phỏng vấn online","vòng phỏng vấn","tranh biện","debate","hùng biện","đứng lớp","dạy học","giảng dạy","trợ giảng"]},
+ 58:{k:["chấm","cho điểm","xếp loại","đánh giá năng lực","xét duyệt hồ sơ","xét tuyển","chấm giải","giám khảo","nhận xét học sinh","nhận xét sinh viên","đánh giá nhân viên","performance review"]},
+ 59:{k:["tài khoản ngân hàng","số thẻ","thẻ tín dụng","otp","mã otp","api key","private key","hồ sơ bệnh án","bệnh án","lương","bảng lương","thông tin nhân viên","danh sách khách hàng","số điện thoại khách","địa chỉ nhà","dữ liệu nhạy cảm","nda","bí mật kinh doanh","trade secret","đề thi chưa công bố"]},
+};
+const CUE_EXT=[
+ ["nộp bài","deadline nộp","cho giảng viên","cho thầy","cho cô","điểm số","đánh giá cuối kỳ","báo cáo chính thức","bản chính thức","chính thức","in ấn","in ra"],
+ ["gửi nhà tài trợ","gửi khách","trình sếp","trình lãnh đạo","cho công ty","khách hàng thật","đăng báo"],
+ ["lương","bảng lương","số điện thoại","danh sách khách hàng","hồ sơ nhân viên","bệnh án","nda","bí mật"],
+ ["thử","học hỏi","để học","để hiểu","luyện tập","practice","demo","ý tưởng ban đầu","bản đầu tiên","bản thô","thô","brainstorm trước"],
+];
+const VERB_EXT=[
+ ["kiếm","liệt","sắp","lọc","đổi tên","chuyển đổi","dịch","rút gọn","căn chỉnh","đo","ước tính","kiểm tra lỗi","nhắc","ghi","note","copy","gộp","tách","trích","hỏi","luyện","check","tìm hiểu"],
+ ["ký","phê duyệt","đàm phán","thương lượng","tuyển","sa thải","an ủi","xin lỗi","tỏ tình","dẫn dắt","chịu","cam kết","quyết định","bảo vệ"],
+ ["xây","hoàn thiện","triển khai","lên","nghiên cứu","tổ chức","quản lý","thiết lập","cải thiện","tối ưu","giải quyết","xử lý","trình bày","thực hiện","vẽ","quay","dựng","sáng tác","sửa","chỉnh"],
+];
+/* hợp nhất vào bộ quy tắc */
+(function(){const uniq=a=>[...new Set(a)];
+ for(const g in EXT){const r=TAX[g-1], e=EXT[g]; r.k=uniq(r.k.concat(e.k||[])); if(e.v){r.v=uniq(e.v); r.o=uniq(e.o);} }
+ CUE_EXT.forEach((a,i)=>CUES[i].k=uniq(CUES[i].k.concat(a)));
+ VERB_EXT.forEach((a,i)=>{const map=[0,1,2]; VERB_HINTS[map[i]].k=uniq(VERB_HINTS[map[i]].k.concat(a));});
+})();
+
 /* ---------- Bộ khớp: theo ranh giới từ, hỗ trợ gõ không dấu ---------- */
 const LV=["well","moderate","weak"];
 function stripVN(s){return s.normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/đ/g,"d").replace(/Đ/g,"D");}
@@ -262,12 +421,17 @@ function toks(s){return " "+String(s||"").normalize("NFC").toLowerCase().replace
 function prep(text){const a=toks(text), b=stripVN(a); return {a,b,plain:a===b};}
 function hit(P,kw){const k=toks(kw).trim(); if(!k) return false; return P.plain? P.b.includes(" "+stripVN(k)+" ") : P.a.includes(" "+k+" ");}
 function kwWeight(kw){return toks(kw).trim().split(" ").length;}
+function bestHit(P,list){let w=0; for(const kw of list) if(hit(P,kw)){const x=kwWeight(kw); if(x>w) w=x;} return w;}
+function ruleScore(P,r){
+  let s=0, longest=0;
+  for(const kw of r.k) if(hit(P,kw)){ const w=kwWeight(kw); s+=w; if(w>longest) longest=w; }
+  if(r.v){ const a=bestHit(P,r.v); if(a){ const b=bestHit(P,r.o); if(b){ s+=a+b; if(a+b>longest) longest=a+b; } } }
+  return {s,longest};
+}
 function bestRule(P){
   let best=-1, bs=0, bl=0;
-  for(let i=0;i<TAX.length;i++){ let s=0, longest=0;
-    for(const kw of TAX[i].k) if(hit(P,kw)){ const w=kwWeight(kw); s+=w; if(w>longest) longest=w; }
-    if(s===0) continue;
-    /* ưu tiên cụm từ dài nhất (cụ thể nhất), rồi tổng điểm */
+  for(let i=0;i<TAX.length;i++){ const {s,longest}=ruleScore(P,TAX[i]); if(s===0) continue;
+    /* ưu tiên khớp dài nhất (cụ thể nhất), rồi tổng điểm */
     if(longest>bl||(longest===bl&&s>bs)){best=i;bs=s;bl=longest;} }
   return best;
 }
@@ -278,7 +442,7 @@ function classifySubtask(text,context){
   if(rule<0&&context){ const PC=prep(context+" "+text); rule=bestRule(PC); if(rule>=0) src="context"; }
   let level, cues=[];
   if(rule>=0){ level=TAX[rule].l;
-    const ruleKws=new Set(TAX[rule].k.map(k=>toks(k).trim()));
+    const ruleKws=new Set(TAX[rule].k.concat(TAX[rule].v||[],TAX[rule].o||[]).map(k=>toks(k).trim()));
     let shift=0;
     CUES.forEach((c,ci)=>{ if(c.k.some(kw=>hit(P,kw)&&!ruleKws.has(toks(kw).trim()))){
       if(Math.sign(c.d)!==-Math.sign(shift)&&!(c.d<0&&level==="well")){ shift+=c.d; cues.push(ci); } } });

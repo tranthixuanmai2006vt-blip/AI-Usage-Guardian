@@ -86,13 +86,13 @@ function trustDlg(){
 function recommendationDlg(it){
   const recs=it.recTools||[], p=recs[0];
   const bcls={well:"bw",moderate:"bm",weak:"bk"}[it.level]||"bu";
-  let h='<h3 style="font-size:19px">'+esc(t("task_recommend_title"))+'</h3>'+
-   '<div class="ubox"><b style="font-size:12.5px">'+esc(t("task_ai_useful_title"))+'</b><div style="margin:8px 0"><span class="badge '+bcls+'">'+esc(levelShort(it.level))+'</span><span class="muted" style="font-size:11.5px">'+esc(levelLabel(it.level))+'</span></div><div style="font-size:12.5px">'+esc(t("task_ai_useful_why"))+' '+esc(reasonOf(it))+'</div></div>';
-  if(p){ h+='<div class="toolpick">'+esc(t("task_recommended_tool"))+': '+esc(p)+'</div><div style="font-size:12.5px">'+esc(recommendationReason(it.topic,it.overall+" "+it.subtask,p))+'</div>'+
-    (recs.length>1?'<div class="muted" style="font-size:11.5px;margin-top:8px">'+esc(t("task_next"))+': '+recs.slice(1).map(esc).join(" · ")+'</div>':''); }
-  else h+='<div class="muted" style="font-size:12.5px">'+esc(t("task_no_recommend"))+'</div>';
+  let h='<h3 style="font-size:22px">'+esc(t("task_recommend_title"))+'</h3>'+
+   '<div class="ubox"><b style="font-size:14.5px">'+esc(t("task_ai_useful_title"))+'</b><div style="margin:8px 0"><span class="badge '+bcls+'">'+esc(levelShort(it.level))+'</span><span class="muted" style="font-size:13px">'+esc(levelLabel(it.level))+'</span></div><div style="font-size:14.5px">'+esc(t("task_ai_useful_why"))+' '+esc(reasonOf(it))+'</div></div>';
+  if(p){ h+='<div class="toolpick">'+esc(t("task_recommended_tool"))+': '+esc(p)+'</div><div style="font-size:14.5px">'+esc(recommendationReason(it.topic,it.overall+" "+it.subtask,p))+'</div>'+
+    (recs.length>1?'<div class="muted" style="font-size:13px;margin-top:8px">'+esc(t("task_next"))+': '+recs.slice(1).map(esc).join(" · ")+'</div>':''); }
+  else h+='<div class="muted" style="font-size:14.5px">'+esc(t("task_no_recommend"))+'</div>';
   h+='<div class="hitl"><b>'+esc(t("task_hitl_title"))+'</b><div style="margin-top:4px">'+esc(t("task_hitl_note"))+'</div></div>';
-  if(p) h+='<p style="font-weight:700;font-size:12.5px;margin:14px 0 8px">'+esc(t("task_feedback_title"))+'</p><div class="acts"><button class="b blue sm" data-v="No">'+esc(t("task_feedback_no"))+'</button><button class="b green sm" data-v="Try">'+esc(t("task_feedback_try"))+'</button><button class="b sm" data-v="Yes" data-focus>'+esc(t("task_feedback_yes"))+'</button></div>';
+  if(p) h+='<p style="font-weight:700;font-size:14.5px;margin:14px 0 8px">'+esc(t("task_feedback_title"))+'</p><div class="acts"><button class="b blue sm" data-v="No">'+esc(t("task_feedback_no"))+'</button><button class="b green sm" data-v="Try">'+esc(t("task_feedback_try"))+'</button><button class="b sm" data-v="Yes" data-focus>'+esc(t("task_feedback_yes"))+'</button></div>';
   else h+='<div class="acts" style="margin-top:14px"><button class="b blue sm" data-v="">'+esc(t("notif_close"))+'</button></div>';
   return dialog(h,(d,done)=>d.querySelectorAll("[data-v]").forEach(b=>b.onclick=()=>done(b.dataset.v||null)));
 }
@@ -398,7 +398,7 @@ async function stopSession(){
 /* ============================== Page: Hôm nay */
 function pDashboard(){
   const d=today(), rows=D.sessions.filter(s=>s.date===d).slice().reverse();
-  return '<div class="rcard lift" style="border-radius:20px;padding:18px"><div class="dash-total num">'+esc(t("dash_total_today",{t:hms(totalToday())}))+'</div><div class="muted" style="font-size:12px;margin-top:2px">'+esc(t("dash_limit",{limit:D.limit}))+'</div></div>'+
+  return '<div class="rcard lift" style="border-radius:20px;padding:18px"><div class="dash-total num">'+esc(t("dash_total_today",{t:hms(totalToday())}))+'</div><div class="muted" style="font-size:14px;margin-top:2px">'+esc(t("dash_limit",{limit:D.limit}))+'</div></div>'+
    '<div class="sect">'+esc(t("dash_sessions_today"))+'</div><div class="tv c"><div class="scroll"><table><thead><tr><th>'+esc(t("col_start"))+'</th><th>'+esc(t("col_end"))+'</th><th>'+esc(t("col_duration"))+'</th><th>'+esc(t("col_trust"))+'</th><th>'+esc(t("col_tool"))+'</th><th>'+esc(t("col_verified"))+'</th><th>'+esc(t("col_region"))+'</th></tr></thead><tbody>'+
    (rows.length?rows.map(s=>'<tr><td class="num">'+s.start+'</td><td class="num">'+s.end+'</td><td class="num">'+hms(s.dur)+'</td><td>'+(s.trust==null?"-":s.trust)+'</td><td>'+esc(sessionTools(s).map(u=>u.name).join(" → "))+'</td><td>'+(s.verified==null?"-":esc(t(s.verified?"yes_short":"no_short")))+'</td><td>'+esc(t(s.region||"region_other"))+'</td></tr>').join(""):'<tr class="empty"><td colspan="7">—</td></tr>')+'</tbody></table></div></div>';
 }
@@ -408,12 +408,12 @@ let draft={overall:"",topic:"general"};
 function pTask(){
   const rows=D.tasks.filter(x=>x.date===today());
   return '<label class="lbl" for="tkO">'+esc(t("task_overall_label"))+'</label><input class="inp tk-in" id="tkO" value="'+esc(draft.overall)+'" style="margin-bottom:10px">'+
-   '<label class="lbl" for="tkT">'+esc(t("task_topic_label"))+'</label><select class="inp" id="tkT" style="max-width:300px;margin-bottom:14px">'+TOPIC_OPTIONS.map(([k,l])=>'<option value="'+k+'"'+(k===draft.topic?" selected":"")+'>'+esc(l)+'</option>').join("")+'</select>'+
-   '<div class="tk-row" style="margin-bottom:10px"><label class="lbl" for="tkS" style="margin:0">'+esc(t("task_sub_label"))+'</label><input class="inp" id="tkS" style="flex:1 1 220px;max-width:360px"><button class="b green sm" id="tkAdd">'+esc(t("task_add_btn"))+'</button></div>'+
+   '<label class="lbl" for="tkT">'+esc(t("task_topic_label"))+'</label><select class="inp" id="tkT" style="max-width:380px;margin-bottom:14px">'+TOPIC_OPTIONS.map(([k,l])=>'<option value="'+k+'"'+(k===draft.topic?" selected":"")+'>'+esc(l)+'</option>').join("")+'</select>'+
+   '<div class="tk-row" style="margin-bottom:10px"><label class="lbl" for="tkS" style="margin:0">'+esc(t("task_sub_label"))+'</label><input class="inp" id="tkS" style="flex:1 1 260px;max-width:520px"><button class="b green sm" id="tkAdd">'+esc(t("task_add_btn"))+'</button></div>'+
    '<div class="tv l"><div class="scroll"><table><thead><tr><th>'+esc(t("task_topic_label"))+'</th><th>'+esc(t("task_col_subtask"))+'</th><th>'+esc(t("task_col_level"))+'</th><th>'+esc(t("task_recommend_title"))+'</th><th>'+esc(t("task_col_choice"))+'</th></tr></thead><tbody>'+
    (rows.length?rows.map(x=>{const rec=(x.recTool||"-")+(x.feedback?" ("+x.feedback+")":""); return '<tr class="pick lv-'+x.level+(selTask===x.id?" sel":"")+'" data-id="'+x.id+'" tabindex="0"><td>'+esc(topicLabel(x.topic))+'</td><td>'+esc(x.subtask)+'</td><td>'+esc(levelLabel(x.level))+'</td><td>'+esc(rec)+'</td><td>'+esc(choiceLabel(x.choice))+'</td></tr>';}).join(""):'<tr class="empty"><td colspan="5">—</td></tr>')+
    '</tbody></table></div></div>'+
-   '<div style="margin:10px 0 8px"><div style="font-size:12.5px;margin-bottom:6px">'+esc(t("task_choice_label"))+'</div><div class="tk-row"><select class="inp" id="tkC" style="width:auto;min-width:220px"><option value="eff">'+esc(t("task_choice_effective"))+'</option><option value="ineff">'+esc(t("task_choice_ineffective"))+'</option><option value="self">'+esc(t("task_choice_self"))+'</option></select>'+
+   '<div style="margin:10px 0 8px"><div style="font-size:14.5px;margin-bottom:6px">'+esc(t("task_choice_label"))+'</div><div class="tk-row"><select class="inp" id="tkC" style="width:auto;min-width:220px"><option value="eff">'+esc(t("task_choice_effective"))+'</option><option value="ineff">'+esc(t("task_choice_ineffective"))+'</option><option value="self">'+esc(t("task_choice_self"))+'</option></select>'+
    '<button class="b sm" id="tkRec">'+esc(t("task_record_btn"))+'</button></div></div>'+
    '<p class="legend">'+["well","moderate","weak"].map(l=>'<span><i class="dot d-'+l+'"></i>'+esc(levelLabel(l))+'</span>').join("")+'</p>';
 }
@@ -460,8 +460,8 @@ function pStats(){
    '<div class="rcard st-card"><h3>'+esc(t("stats_trust_trend"))+'</h3>'+chart(trend,5,v=>String(v),["var(--chart-blue)"],"stats_no_trust_data")+'</div>'+
    '<div class="rcard st-card"><h3>'+esc(t("stats_tool_dist"))+'</h3>'+chart(tools.map(x=>({l:x.tool,v:Math.floor(x.sec/60)})),maxMin,v=>v+"m",pal,"stats_no_tool_data")+'</div>'+
    '<div class="rcard st-card"><h3>'+esc(t("stats_tool_trust"))+'</h3>'+chart(tools.map(x=>({l:x.tool,v:x.trust||0})),5,v=>String(v),pal,"stats_no_tool_data")+'</div></div>'+
-   '<div class="st-title" style="font-size:12.5px;margin:16px 0 6px">'+esc(t("stats_match_title"))+'</div><div class="rcard match">'+m+'</div>'+
-   '<div class="st-title" style="font-size:12.5px;margin:16px 0 6px">'+esc(t("v_title"))+'</div><div class="rcard match">'+verifyBlock()+'</div>';
+   '<div class="st-title" style="font-size:14.5px;margin:16px 0 6px">'+esc(t("stats_match_title"))+'</div><div class="rcard match">'+m+'</div>'+
+   '<div class="st-title" style="font-size:14.5px;margin:16px 0 6px">'+esc(t("v_title"))+'</div><div class="rcard match">'+verifyBlock()+'</div>';
 }
 function wStats(){}
 function verifyBlock(){
@@ -488,7 +488,7 @@ function wHistory(){}
 /* ============================== Page: Cài đặt */
 function pSettings(){
   const ch=new Set(D.profile.tools);
-  return '<div class="set-wrap"><div class="rcard" style="padding:16px"><div style="font-weight:700;font-size:15px;margin-bottom:8px">'+esc(t("settings_profile_section"))+'</div>'+
+  return '<div class="set-wrap"><div class="rcard" style="padding:16px"><div style="font-weight:700;font-size:17px;margin-bottom:8px">'+esc(t("settings_profile_section"))+'</div>'+
    '<label class="lbl" for="seN" style="font-weight:400">'+esc(t("login_name"))+'</label><input class="inp" id="seN" style="max-width:320px;margin-bottom:10px" value="'+esc(D.profile.name)+'">'+
    '<span class="lbl" style="font-weight:400">'+esc(t("settings_tools_label"))+'</span>'+toolPicker("se",ch)+'</div>'+
    '<div class="rcard" style="padding:16px"><label class="lbl" for="seL">'+esc(t("settings_limit_label"))+'</label><input class="inp num" id="seL" inputmode="numeric" style="width:100px;margin-bottom:14px" value="'+D.limit+'">'+
