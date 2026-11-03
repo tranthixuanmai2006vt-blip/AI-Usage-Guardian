@@ -107,7 +107,7 @@ function toast(title,lines){
 /* ============================== Data operations */
 function addSession(o){D.sessions.push(Object.assign({id:D.seq++},o)); save();}
 function addTaskItem(overall,topic,subtask,date){
-  const c=classifySubtask(subtask);
+  const c=classifySubtask(subtask,overall);
   const it={id:D.seq++,date:date||today(),overall,topic,subtask,level:c.level,rule:c.rule,recTools:recommendTools(topic,overall+" "+subtask,D.profile.tools),recTool:null,feedback:null,choice:null,created:clock(new Date())};
   D.tasks.push(it); save(); return it;
 }
@@ -233,7 +233,7 @@ function renderLogin(){
     enter("demo"); };
 }
 function enter(u){
-  user=u; D=sget(K_DATA+u); if(!D){D=newData(u,{name:u,school:"",region_key:"region_north",tools:["ChatGPT"]}); save();}
+  user=u; D=sget(K_DATA+u); if(!D){D=newData(u,{name:u,school:"",region_key:"region_north",tools:["ChatGPT"]}); save();} if(reclassTasks(D)) save();
   lang=D.lang||"vi"; sset(K_CUR,u); page="tracker"; selTask=null; trackerMsg=null; renderShell(); maybeWeekly();
 }
 

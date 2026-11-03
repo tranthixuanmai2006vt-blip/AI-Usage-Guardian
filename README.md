@@ -6,9 +6,10 @@ Bản web được chuyển từ app Tkinter `main_AI.py`, giữ nguyên bố c�
 
 | Tính năng | Mô tả |
 |---|---|
-| Phân tích Task | Xếp từng task nhỏ vào mức Cao / Trung bình / Thấp theo 33 nhóm quy tắc, luôn kèm lý do và lời nhắc Human-in-the-Loop |
+| Phân tích Task | Xếp từng task nhỏ vào mức Cao / Trung bình / Thấp theo 59 nhóm quy tắc, luôn kèm lý do và lời nhắc Human-in-the-Loop |
 | Gợi ý công cụ AI | Chọn công cụ phù hợp trong 284 công cụ thuộc 19 nhóm (chatbot, viết, hình ảnh, video, giọng nói, nhạc, lập trình, nghiên cứu, thiết kế, thuyết trình, marketing, tự động hoá, năng suất, dữ liệu, CSKH, học tập, 3D, tài chính–pháp lý–nhân sự, nền tảng AI), kèm lý do; người dùng phản hồi Có / Tôi sẽ thử / Không |
-| Theo dõi phiên | Bấm giờ từng phiên dùng AI, chấm mức tin 1–5 khi kết thúc, cảnh báo khi gần / vượt giới hạn |
+| Theo dõi phiên | Một phiên dùng được nhiều công cụ: chuyển công cụ bằng một chạm, thời gian tự chia cho từng công cụ; quy trình nhanh lưu sẵn tổ hợp hay dùng; cuối phiên chấm mức tin 1–5 (chung hoặc riêng từng công cụ) và trả lời có kiểm tra lại bằng công cụ/nguồn khác hay không |
+| Kiểm chứng | Thống kê tỷ lệ phiên có kiểm chứng, so sánh mức tin khi có và không kiểm chứng, tỷ lệ phiên dùng nhiều công cụ |
 | Thống kê đối chiếu | Đặt gợi ý của hệ thống cạnh điều người dùng thực sự làm; đánh dấu task mức Thấp vẫn giao cho AI (over-reliance) |
 | Báo cáo tuần | Công cụ dùng nhiều / ít / được tin nhất, cảnh báo khi công cụ dùng nhiều nhất có mức tin thấp |
 
@@ -24,7 +25,7 @@ ai-usage-guardian/
 │   ├── css/styles.css      giao diện + chuyển động
 │   ├── js/i18n.js          chuỗi song ngữ VI / EN
 │   ├── js/tools.js         danh mục 284 công cụ AI theo 19 nhóm
-│   ├── js/rules.js         33 nhóm quy tắc phân loại task + bộ gợi ý công cụ
+│   ├── js/rules.js         59 nhóm quy tắc phân loại task + bộ gợi ý công cụ
 │   ├── js/app.js           giao diện, lưu trữ cục bộ, dữ liệu mẫu
 │   └── fonts/              Samsung Sharp Sans (woff2)
 └── .nojekyll
